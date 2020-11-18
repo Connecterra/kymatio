@@ -123,8 +123,21 @@ backend.unpad = unpad
 backend.cdgmm = cdgmm
 backend.pad = pad
 backend.pad_1d = pad_1d
-backend.fft = FFT(lambda x: tf.signal.fft(x, name='fft1d'),
-                  lambda x: tf.signal.ifft(x, name='ifft1d'),
-                  lambda x: tf.math.real(tf.signal.ifft(x, name='irfft1d')),
-                  lambda x: None)
+
+def __fft_fn(x: tf.Tensor):
+    return tf.signal.fft(x, name='fft1d')
+
+def __ifft_fn(x: tf.Tensor):
+    return tf.signal.ifft(x, name='ifft1d')
+
+def __real_ifft_fn(x: tf.Tensor):
+    return tf.math.real(tf.signal.ifft(x, name='irfft1d'))
+
+def __sanity_checks(x: tf.Tensor):
+    pass
+
+backend.fft = FFT(__fft_fn,
+                  __ifft_fn,
+                  __real_ifft_fn,
+                  __sanity_checks)
 backend.concatenate = lambda x: concatenate(x, -2)
